@@ -1,0 +1,5 @@
+# API do Dialoga+ (Python 3.10 ou mais novo)
+# Instalar com: pip install -r requirements.txt
+flask>=3.0,<4
+anthropic>=0.40
+gunicorn>=21.2

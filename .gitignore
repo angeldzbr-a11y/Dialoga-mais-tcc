@@ -1,0 +1,8 @@
+# Nunca envie a chave da IA para o GitHub
+.env
+*.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
