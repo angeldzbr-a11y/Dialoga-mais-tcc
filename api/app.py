@@ -1,12 +1,3 @@
-"""
-API Flask do Dialoga+ (versão 1, sem banco de dados).
-
-Todos os dados ficam na MEMÓRIA do servidor: ao reiniciar, contas, histórico,
-rascunhos e alterações de cenários são perdidos. Para produção, troque os
-dicionários USERS/HIST/DRAFTS/SCEN/LOG por um banco de dados.
-
-A chave da IA (ANTHROPIC_API_KEY) fica só aqui no servidor, nunca no front-end.
-"""
 import html
 import json
 import os
@@ -32,7 +23,7 @@ TOKEN_TTL = 8 * 3600
 DESBLOQUEIO = os.getenv("DESBLOQUEIO", "primeiro")
 LOCK = threading.Lock()
 
-# ---------------------------------------------------------------- dados iniciais
+# dados iniciais
 SEED = json.loads(r'''{"cidadania": {"nome": "Cidadania", "icone": "🏛️", "descricao": "Convivência em espaços comuns, regras e responsabilidade coletiva.", "c": ["Na fila da cantina, um colega fura a fila e diz que está com pressa. Você também está atrasado para a aula.", "Há lixo espalhado no pátio depois do intervalo e alguns colegas dizem que a limpeza não é problema deles.", "Seu grupo precisa decidir como votar o tema da feira da escola, e dois colegas só querem a própria ideia.", "Você vê um colega estragando de propósito um mural feito pela turma do ano anterior."]}, "diversidade": {"nome": "Diversidade e Respeito", "icone": "🌈", "descricao": "Lidar com diferenças de opinião, origem, jeito de ser e de falar.", "c": ["Um colega novo tem sotaque diferente e outros imitam a fala dele rindo.", "Num trabalho em grupo, alguém descarta a sugestão de uma colega dizendo que ela “não entende do assunto”.", "Um amigo faz uma piada sobre a religião de outro colega, que fica em silêncio e se afasta.", "Sua turma vai planejar uma festa e uma pessoa não pode comer certos alimentos por motivo cultural."]}, "paz": {"nome": "Cultura de Paz", "icone": "🕊️", "descricao": "Resolver conflitos sem violência e reparar relações.", "c": ["Dois amigos seus brigaram e cada um pede que você fique do lado dele.", "Alguém espalhou no grupo da turma uma foto sua que você não queria que fosse compartilhada.", "Um colega te empurra no corredor e diz que foi sem querer, mas você ficou com raiva.", "Você falou algo no calor da discussão e percebeu que magoou uma pessoa próxima."]}, "direitos": {"nome": "Direitos Humanos", "icone": "⚖️", "descricao": "Dignidade, igualdade e proteção de todas as pessoas.", "c": ["Uma colega com deficiência não consegue chegar à sala de aula por causa de uma escada, e ninguém comenta.", "Você ouve que “algumas pessoas não merecem opinar” numa discussão da turma.", "Um grupo exclui um colega das atividades porque ele mora em outro bairro.", "Você descobre que um colega está sendo ameaçado por mensagens e pediu que você não conte a ninguém."]}}''')
 THEMES = {k: {"id": k, "nome": v["nome"], "descricao": v["descricao"], "icone": v["icone"]} for k, v in SEED.items()}
 SEED_N = json.loads(r'''{
@@ -105,7 +96,7 @@ LIMITES = {}  # chave -> [timestamps]
 EMAIL_RE = re.compile(r"^\S+@\S+\.\S+$")
 
 
-# ---------------------------------------------------------------- utilidades
+# utilidades
 def erro(msg, codigo=400):
     return jsonify({"erro": msg}), codigo
 
@@ -224,7 +215,7 @@ def validacao(tid):
             else f"Cada nível precisa de exatamente 4 cenários ativos (agora: {por})."}
 
 
-# ---------------------------------------------------------------- saúde e temas
+# saúde e temas
 @app.get("/api/health")
 def health():
     return jsonify({"status": "ok", "modelo": MODEL, "ia_configurada": bool(os.getenv("ANTHROPIC_API_KEY"))})
@@ -253,7 +244,7 @@ def cenarios(tid):
     return jsonify([{"id": s["id"], "texto": s["texto"]} for s in a])
 
 
-# ---------------------------------------------------------------- conta (telas de login, cadastro, perfil)
+# conta (telas de login, cadastro, perfil)
 @app.post("/api/auth/register")
 def cadastro():
     d = corpo()
@@ -338,7 +329,7 @@ def me_excluir(u):
     return jsonify({"ok": True})
 
 
-# ---------------------------------------------------------------- rascunho (continuar atividade)
+# rascunho (continuar atividade)
 @app.get("/api/draft")
 @requer_login
 def rascunho(u):
@@ -364,7 +355,7 @@ def rascunho_apagar(u):
     return jsonify({"ok": True})
 
 
-# ---------------------------------------------------------------- análise pela IA (tela de feedback)
+# análise pela IA (tela de feedback)
 SISTEMA = """Você é um mediador educativo para estudantes, especialista em Comunicação Não Violenta (CNV).
 Receberá um tema e quatro situações com as respostas de um estudante. Devolva um feedback educativo.
 
@@ -489,7 +480,7 @@ def analisar():
     return jsonify(fb)
 
 
-# ---------------------------------------------------------------- histórico e progresso
+# histórico e progresso
 @app.get("/api/history")
 @requer_login
 def historico(u):
@@ -533,7 +524,7 @@ def progresso(u):
                     "temas": {k: {"concluidos": concluidos(u, k), "liberados": liberados(u, k)} for k in THEMES}})
 
 
-# ---------------------------------------------------------------- salas privadas (professor cria, alunos entram com código)
+# salas privadas (professor cria, alunos entram com código)
 ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # sem 0, O, 1, I para não confundir
 
 
@@ -700,7 +691,7 @@ def prof_stats(u):
                                   "alunos": len(s["membros"]), "atividades": len(s["atividades"])} for s in minhas]})
 
 
-# ---------------------------------------------------------------- área administrativa
+# área administrativa
 @app.get("/api/admin/stats")
 @requer_admin
 def adm_stats(_):
