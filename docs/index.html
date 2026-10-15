@@ -110,15 +110,9 @@ body{background:radial-gradient(900px 520px at 90% -8%,var(--pri2),transparent 6
 </footer>
 
 <script>
-/* ===== CONFIGURAÇÃO DA API (Flask) =====
- GET  {API}/themes                 -> [{id,nome,descricao,icone}]
- GET  {API}/themes/<id>/scenarios  -> [{id,texto}] (4 itens)
- POST {API}/analyze  {theme_id, answers:[{scenario_id,texto,resposta}]}
-   -> {resumo, observacao, sentimento, necessidade, pedido,
-       pontos_positivos:[], reflexoes:[], exemplo}
- Se a API não responder, usa-se só a lista local de temas/cenários;
- a ANÁLISE nunca é simulada. */
-const API = (location.protocol==="file:"||["localhost","127.0.0.1"].includes(location.hostname))?"http://localhost:5000/api":"https://SEU-APP.onrender.com/api"; /* troque SEU-APP pelo endereço da sua API publicada */
+/* ===== CONFIGURAÇÃO DA API (Flask) =====*/
+  
+const API = (location.protocol==="file:"||["localhost","127.0.0.1"].includes(location.hostname))?"http://localhost:5000/api":"https://dialoga-mais-tcc.onrender.com/"; /* troque SEU-APP pelo endereço da sua API publicada */
 
 const LOCAL = {
  cidadania:{nome:"Cidadania",icone:"🏛️",descricao:"Convivência em espaços comuns, regras e responsabilidade coletiva.",c:[
